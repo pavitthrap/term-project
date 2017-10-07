@@ -1,0 +1,40 @@
+import bpy
+import random
+#delete current objects
+meshObjects=[]
+for ob in bpy.data.objects:
+    if ob.type=="MESH":
+        meshObjects.append(ob.name)
+print(meshObjects)
+
+for meshOb in meshObjects:
+    bpy.data.objects[meshOb].select= True
+bpy.ops.object.delete()
+
+#http://blenderscripting.blogspot.com/2012/03/deleting-objects-from-scene.html
+for ob in bpy.data.meshes:
+    bpy.data.meshes.remove(ob)
+#############
+
+#randomly generate array of locations in 10*10*10 cube
+#centered around origin 
+#x:(-5,5), y:(-5,5),z:(-5:5)
+CUBE_LENGTH=10
+DIMLIMIT=CUBE_LENGTH//2  #do I want int division here?
+numGalaxies=10
+SPHERE_SIZE=0.2
+SEGMENTS, RING_COUNT=10,10
+galaxyLocations=set()
+counter=0
+while (counter<numGalaxies):
+    newX=random.randint(-DIMLIMIT,DIMLIMIT)
+    newY=random.randint(-DIMLIMIT,DIMLIMIT)
+    newZ=random.randint(-DIMLIMIT,DIMLIMIT)
+    newLocation=(newX,newY,newZ)
+    if newLocation not in galaxyLocations: #get better alg here
+        galaxyLocations.add(newLocation) 
+        counter+=1
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=SEGMENTS,
+        ring_count=RING_COUNT, size=SPHERE_SIZE,location=newLocation)
+        #for each galaxy, make swirling particles w force field
+        #can make a particle system around each mesh
